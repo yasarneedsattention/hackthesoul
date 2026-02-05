@@ -3,244 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLYPH-GRIND // ANTI-ROT</title>
+    <title>GLYPH-GRIND // PUNK_RETAIL</title>
     <style>
         :root {
-            --bg: #000; --fg: #FFF; --safety: #FF4500; --acid: #CCFF00;
-            --pink: #FF00FF; --cyan: #00FFFF; --font: 'Courier New', monospace;
+            --bg: #000; --gba: #1a1a1a; --safety: #FF4500; --acid: #CCFF00;
+            --font: 'Courier New', monospace;
         }
         * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
-        body, html { 
-            margin: 0; padding: 0; background: #000; 
-            font-family: var(--font); height: 100vh; overflow: hidden; 
-            display: flex; flex-direction: column; align-items: center; 
+        body, html { margin: 0; padding: 0; background: #000; font-family: var(--font); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
+        /* GBA SHELL */
+        #gba {
+            width: 95vw; max-width: 750px; aspect-ratio: 1.6;
+            background: var(--gba); border-radius: 40px; padding: 15px;
+            display: grid; grid-template-columns: 1fr 3.5fr 1fr; align-items: center;
+            box-shadow: 0 10px 0 #000; border: 4px solid #333;
         }
 
-        #game-container { 
-            width: 100vw; height: 100vh; max-width: 500px; 
-            border: 4px solid #FFF; position: relative; overflow: hidden; 
-            display: flex; flex-direction: column;
-        }
+        /* SCREEN */
+        #screen { height: 90%; background: #000; border-radius: 10px; padding: 5px; position: relative; overflow: hidden; }
+        #view { width: 100%; height: 100%; background: #FFF; position: relative; overflow: hidden; }
 
-        /* DESIGNER DOCK */
-        #dock { 
-            background: #FFF; color: #000; padding: 10px; 
-            border-bottom: 6px solid var(--safety); z-index: 1000;
-        }
-        .dock-row { display: flex; gap: 5px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
-        .dock-row::-webkit-scrollbar { display: none; }
-        .btn { 
-            flex: 0 0 auto; border: 2px solid #000; padding: 5px 10px; 
-            font-size: 10px; font-weight: 900; cursor: pointer; background: #FFF; 
-        }
-        .btn.active { background: #000; color: #FFF; }
+        /* PUNK BACKGROUND */
+        #bg-slogan { position: absolute; font-size: 5rem; font-weight: 900; color: rgba(0,0,0,0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; }
+        #graffiti { position: absolute; font-size: 10px; font-weight: 900; color: var(--safety); top: 10px; left: 10px; z-index: 2; }
 
-        /* VIEWPORT */
-        #viewport { flex-grow: 1; position: relative; background: #111; overflow: hidden; }
-        #venue-text { 
-            position: absolute; font-size: 6rem; font-weight: 900; 
-            color: rgba(255,255,255,0.08); top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); z-index: 1; pointer-events: none; 
-            text-align: center; width: 100%;
-        }
-        .punk-quote { 
-            position: absolute; font-size: 11px; color: var(--acid); 
-            font-weight: 900; z-index: 2; opacity: 0.7; pointer-events: none;
-        }
+        /* START SCREEN */
+        #menu { position: absolute; inset: 0; background: #FFF; z-index: 1000; display: flex; flex-direction: column; padding: 15px; border: 4px solid #000; }
+        .row { display: flex; gap: 5px; overflow-x: auto; padding: 5px 0; margin-bottom: 5px; }
+        .swatch { width: 25px; height: 25px; border: 2px solid #000; cursor: pointer; flex-shrink: 0; }
+        .m-btn { padding: 5px; border: 2px solid #000; font-size: 8px; font-weight: 900; cursor: pointer; background: #EEE; }
+        .m-btn.on { background: var(--safety); color: #FFF; }
 
-        /* PLAYER & ASSETS */
-        .player { position: absolute; bottom: 60px; left: 40px; width: 50px; height: 80px; z-index: 50; }
-        .head { 
-            width: 40px; height: 40px; background: #000; border: 2px solid #FFF; 
-            border-radius: 10% 25% 10% 15%; position: relative; 
-            display: flex; justify-content: center; align-items: center;
-        }
-        .teeth { display: none; width: 20px; height: 8px; background: #FFF; clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0); margin-top: 15px; }
-        .ears { display: none; position: absolute; top: -12px; width: 100%; justify-content: space-between; }
-        .ear { width: 10px; height: 18px; background: inherit; clip-path: polygon(50% 0, 0 100%, 100% 100%); }
-        .halo { display: none; position: absolute; top: -20px; width: 30px; height: 4px; border: 2px solid var(--cyan); border-radius: 50%; }
-        .glasses { display: none; position: absolute; top: 12px; width: 100%; height: 6px; background: #000; border: 1px solid var(--safety); z-index: 10; }
-        
-        .torso { 
-            width: 42px; height: 38px; background: #000; border: 2px solid #FFF; 
-            margin-top: 2px; font-size: 7px; font-weight: 900; color: #FFF; 
-            display: flex; justify-content: center; align-items: center; position: relative;
-        }
-        .belt { display: none; width: 110%; height: 6px; background: var(--yellow); position: absolute; top: 10px; transform: rotate(-5deg); }
+        /* PLAYER & STYLISH ENEMIES */
+        #player { position: absolute; left: 40px; width: 40px; height: 60px; z-index: 500; }
+        .head { width: 35px; height: 35px; background: #000; border: 2px solid #000; border-radius: 12% 25% 10% 15%; position: relative; display: flex; justify-content: center; align-items: center; }
+        .torso { width: 40px; height: 25px; background: #000; margin-top: 1px; color: #FFF; font-size: 7px; font-weight: 900; display: flex; justify-content: center; align-items: center; border: 2px solid #000; }
+        .ears { display: none; position: absolute; top: -10px; width: 100%; justify-content: space-between; }
+        .ear { width: 10px; height: 15px; background: inherit; clip-path: polygon(50% 0, 0 100%, 100% 100%); }
+        .teeth { width: 20px; height: 6px; background: #FFF; clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0); margin-top: 15px; display: none; }
 
-        /* ENEMIES */
-        .enemy { position: absolute; bottom: 60px; width: 45px; height: 75px; z-index: 40; display: flex; flex-direction: column; align-items: center; }
-        .bot-label { font-size: 8px; background: var(--safety); color: #FFF; padding: 2px; margin-bottom: 2px; }
+        .gatekeeper { position: absolute; background: #000; width: 60px; right: -70px; border: 4px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .eye { width: 10px; height: 10px; background: var(--acid); border-radius: 50%; box-shadow: 0 0 10px var(--acid); margin: 5px; }
 
-        #floor { position: absolute; bottom: 0; width: 100%; height: 60px; background: #FFF; border-top: 4px solid var(--safety); }
-        #hud { position: absolute; top: 10px; left: 10px; font-weight: 900; background: #000; color: #FFF; padding: 4px 8px; z-index: 200; font-size: 14px; border: 1px solid #FFF; }
+        /* CONTROLS */
+        .side { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .btn-a { width: 50px; height: 50px; background: var(--safety); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #FFF; font-weight: 900; box-shadow: 0 4px 0 #000; cursor: pointer; }
+        .btn-a:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+        .hint { font-size: 7px; color: #666; text-align: center; }
 
         /* OVERLAYS */
-        #overlay { 
-            position: absolute; inset: 0; background: rgba(0,0,0,0.9); 
-            display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; z-index: 2000; text-align: center;
-        }
-        .glitch-btn { 
-            background: var(--safety); color: #FFF; border: none; padding: 20px 40px; 
-            font-weight: 900; font-size: 1.5rem; cursor: pointer; font-family: inherit; 
-        }
-
-        .hit { animation: glitch 0.1s infinite; }
-        @keyframes glitch { 0% { filter: hue-rotate(90deg) invert(1); transform: translate(3px); } 100% { filter: hue-rotate(180deg) invert(0); transform: translate(-3px); } }
+        #over { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; color: #FFF; z-index: 5000; }
+        #score { position: absolute; top: 10px; right: 10px; font-weight: 900; font-size: 20px; z-index: 100; }
     </style>
 </head>
-<body onmousedown="handleJump()" ontouchstart="handleJump()">
+<body onmousedown="jump()" ontouchstart="jump()">
 
-<div id="game-container">
-    <div id="dock">
-        <div style="font-weight:900; font-size: 10px; border-bottom: 2px solid #000;">"ANTI_ROT_CUSTOMS"</div>
-        <div class="dock-row" id="color-row"></div>
-        <div class="dock-row" id="mod-row"></div>
-        <div class="dock-row">
-            <span style="font-size:8px; font-weight:900;">SPEED:</span>
-            <input type="range" id="speed-input" min="5" max="15" value="7" style="flex-grow:1; accent-color: var(--safety);">
+<div id="gba">
+    <div class="side"><div style="font-size:30px; color:#222">✚</div><div class="hint">PC: SPACE<br>PH: TAP SCREEN</div></div>
+
+    <div id="screen">
+        <div id="view">
+            <div id="bg-slogan">VOID</div>
+            <div id="graffiti">"RECLAIM_THE_FRAME"</div>
+            <div id="score">0</div>
+
+            <div id="menu">
+                <div style="font-size:18px; font-weight:900; border-bottom:4px solid #000;">"DESIGNER_LAB"</div>
+                <div style="font-size:8px; margin:5px 0;">COLOR_PALETTE</div>
+                <div class="row" id="colors"></div>
+                <div style="font-size:8px; margin:5px 0;">MODS</div>
+                <div class="row">
+                    <div class="m-btn" id="m-ears" onclick="mod('ears')">EARS</div>
+                    <div class="m-btn" id="m-teeth" onclick="mod('teeth')">TEETH</div>
+                </div>
+                <button onclick="boot()" style="width:100%; margin-top:auto; padding:12px; background:#000; color:#FFF; font-weight:900; border:none; cursor:pointer;">START GAME</button>
+            </div>
+
+            <div id="player">
+                <div class="ears" id="p-ears"><div class="ear"></div><div class="ear"></div></div>
+                <div class="head" id="p-head"><div class="teeth" id="p-teeth"></div></div>
+                <div class="torso" id="p-torso">"USER"</div>
+            </div>
+
+            <div id="over">
+                <h1 style="color:var(--safety)">GAME OVER</h1>
+                <p>SCORE: <span id="final">0</span></p>
+                <button onclick="location.reload()" style="padding:10px 20px; font-family:inherit; font-weight:900; cursor:pointer;">RESTART</button>
+            </div>
         </div>
     </div>
 
-    <div id="viewport">
-        <div id="hud">VIBE: <span id="vibe-val">0</span></div>
-        <div id="venue-text">THE_VOID</div>
-        
-        <div id="p1" class="player">
-            <div class="ears" id="m-ears"><div class="ear"></div><div class="ear"></div></div>
-            <div class="halo" id="m-halo"></div>
-            <div class="head" id="m-head"><div class="glasses" id="m-glasses"></div><div class="teeth" id="m-teeth"></div></div>
-            <div class="torso" id="m-torso"><div class="belt" id="m-belt"></div>"USER"</div>
-        </div>
-        
-        <div id="floor"></div>
-    </div>
-
-    <div id="overlay">
-        <h1 style="color:var(--acid); font-size: 3rem;">GLYPH<br>GRIND</h1>
-        <p style="font-size: 10px; margin-bottom: 20px;">[ NO_AI // NO_PROMPTS // PURE_STATIC ]</p>
-        <button class="glitch-btn" onclick="startMatch()">"BOOT_SYSTEM"</button>
+    <div class="side">
+        <div class="btn-a" onclick="jump()">A</div>
+        <div class="hint">PC: SPACE<br>PH: TAP A</div>
     </div>
 </div>
 
 <script>
-    const colors = ['#000', '#FF4500', '#CCFF00', '#00FFFF', '#FF00FF', '#FFF', '#8A2BE2', '#444'];
-    const mods = ['ears', 'teeth', 'halo', 'glasses', 'belt'];
-    const slogans = ["ANTI_ALGO", "VOID_FEED", "HUMAN_MADE", "NO_ASSETS", "REAL_STATIC", "BURN_THE_CLOUD", "OFF_GRID"];
-    const venues = ["THE_VOID", "CATWALK_HELL", "SILICON_PIT", "NULL_ZONE", "PUNK_SECTOR"];
+    const cfg = { color: '#000', ears: false, teeth: false };
+    const game = { active: false, y: 150, vy: 0, gravity: 0.35, lift: -6.5, pipes: [], frame: 0, score: 0 };
+    const palette = ['#000', '#FF4500', '#CCFF00', '#FF00FF', '#00FFFF', '#FFF', '#8A2BE2', '#FFD700'];
+    const slogans = ["VOID", "ANTI-AI", "BOOTLEG", "RETAIL", "PUNK"];
+    const graffiti = ["VOID_YOUR_FEED", "HUMAN_MADE", "ANTI_ALGO", "STAY_STATIC"];
 
-    const game = {
-        active: false,
-        y: 0, vy: 0, 
-        score: 0,
-        speed: 7,
-        enemies: [],
-        slogans: [],
-        config: { color: '#000', mods: {} }
-    };
-
-    function setupDock() {
-        const cRow = document.getElementById('color-row');
-        colors.forEach(c => {
-            const b = document.createElement('div'); b.className = 'btn'; b.style.background = c;
-            b.onclick = (e) => { e.stopPropagation(); game.config.color = c; updateVisuals(); };
-            cRow.appendChild(b);
-        });
-        const mRow = document.getElementById('mod-row');
-        mods.forEach(m => {
-            const b = document.createElement('div'); b.className = 'btn'; b.innerText = m.toUpperCase();
-            b.onclick = (e) => { e.stopPropagation(); game.config.mods[m] = !game.config.mods[m]; b.classList.toggle('active'); updateVisuals(); };
-            mRow.appendChild(b);
-        });
-    }
-
-    function updateVisuals() {
-        const h = document.getElementById('m-head');
-        const t = document.getElementById('m-torso');
-        h.style.background = t.style.background = game.config.color;
-        h.style.borderColor = (game.config.color === '#FFF') ? '#000' : '#FFF';
-        t.style.color = (game.config.color === '#FFF' || game.config.color === '#00FFFF') ? '#000' : '#FFF';
-        
-        mods.forEach(m => {
-            document.getElementById(`m-${m}`).style.display = game.config.mods[m] ? (m==='ears'?'flex':'block') : 'none';
-        });
-        document.querySelectorAll('.ear').forEach(e => e.style.background = game.config.color);
-    }
-
-    function handleJump() {
-        if(game.active && game.y === 0) {
-            game.vy = -18;
-            if(window.navigator.vibrate) window.navigator.vibrate(15);
-        }
-    }
-
-    function startMatch() {
-        game.active = true;
-        game.score = 0;
-        game.speed = parseInt(document.getElementById('speed-input').value);
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    function spawnSlogan() {
+    // Menu Setup
+    palette.forEach(c => {
         const s = document.createElement('div');
-        s.className = 'punk-quote';
-        s.innerText = slogans[Math.floor(Math.random()*slogans.length)];
-        s.style.top = (100 + Math.random()*200) + 'px';
-        s.x = 500;
-        document.getElementById('viewport').appendChild(s);
-        game.slogans.push({el: s, x: 500, speed: 2 + Math.random()*2});
+        s.className = 'swatch'; s.style.background = c;
+        s.onclick = () => { cfg.color = c; draw(); };
+        document.getElementById('colors').appendChild(s);
+    });
+
+    function mod(t) {
+        cfg[t] = !cfg[t];
+        document.getElementById('m-'+t).classList.toggle('on');
+        draw();
     }
 
-    function spawnEnemy() {
-        const e = document.createElement('div');
-        e.className = 'enemy';
-        e.innerHTML = `<div class="bot-label">BOT_BOT</div><div class="head" style="background:var(--safety)"></div><div class="torso" style="background:var(--safety)">"ROT"</div>`;
-        e.x = 500;
-        document.getElementById('viewport').appendChild(e);
-        game.enemies.push({el: e, x: 500});
+    function draw() {
+        const h = document.getElementById('p-head'), t = document.getElementById('p-torso');
+        h.style.background = t.style.background = cfg.color;
+        h.style.borderColor = (cfg.color === '#FFF') ? '#000' : '#FFF';
+        t.style.color = (cfg.color === '#FFF') ? '#000' : '#FFF';
+        document.getElementById('p-ears').style.display = cfg.ears ? 'flex' : 'none';
+        document.getElementById('p-teeth').style.display = cfg.teeth ? 'block' : 'none';
+        document.querySelectorAll('.ear').forEach(e => e.style.background = cfg.color);
+    }
+
+    function jump() { if(game.active) game.vy = game.lift; }
+    window.onkeydown = (e) => { if(e.code === 'Space') jump(); };
+
+    function boot() {
+        game.active = true;
+        document.getElementById('menu').style.display = 'none';
+        loop();
+    }
+
+    function spawn() {
+        const gap = 160, topH = Math.random() * 120 + 20;
+        const top = document.createElement('div');
+        top.className = 'gatekeeper'; top.style.height = topH + 'px'; top.style.top = '0';
+        top.innerHTML = '<div class="eye"></div><div style="font-size:6px; color:white; font-weight:900;">BOT</div>';
+        
+        const bot = document.createElement('div');
+        bot.className = 'gatekeeper'; bot.style.top = (topH + gap) + 'px'; bot.style.bottom = '0';
+        bot.innerHTML = '<div style="font-size:6px; color:white; font-weight:900; margin-bottom:5px;">VOID</div><div class="eye"></div>';
+        
+        document.getElementById('view').appendChild(top);
+        document.getElementById('view').appendChild(bot);
+        game.pipes.push({ x: 400, top, bot, passed: false });
     }
 
     function loop() {
-        if(game.active) {
-            // Physics
-            game.y -= game.vy; game.vy += 0.9;
-            if(game.y <= 0) { game.y = 0; game.vy = 0; }
-            document.getElementById('p1').style.bottom = (60 + game.y) + 'px';
+        if(!game.active) return;
+        game.frame++; game.vy += game.gravity; game.y += game.vy;
+        const pEl = document.getElementById('player');
+        pEl.style.top = game.y + 'px';
+        pEl.style.transform = `rotate(${Math.min(game.vy * 3, 30)}deg)`;
 
-            // Enemy Collision & Move
-            game.enemies.forEach((en, i) => {
-                en.x -= game.speed; en.el.style.left = en.x + 'px';
-                if(en.x < 80 && en.x > 20 && game.y < 40) {
-                    game.active = false;
-                    document.getElementById('viewport').classList.add('hit');
-                    setTimeout(() => {
-                        alert("BRAINROT_DETECTED. REBOOTING.");
-                        location.reload();
-                    }, 100);
+        if(game.y < -10 || game.y > 340) die();
+        if(game.frame % 100 === 0) spawn();
+
+        game.pipes.forEach((p, i) => {
+            p.x -= 2.5; p.top.style.left = p.bot.style.left = p.x + 'px';
+            if(p.x < 80 && p.x > 10) {
+                const hT = parseInt(p.top.style.height), hB = parseInt(p.bot.style.top);
+                if(game.y < hT || (game.y + 50) > hB) die();
+            }
+            if(!p.passed && p.x < 40) {
+                p.passed = true; game.score++;
+                document.getElementById('score').innerText = game.score;
+                if(game.score % 5 === 0) {
+                    document.getElementById('bg-slogan').innerText = slogans[Math.floor(Math.random()*slogans.length)];
+                    document.getElementById('graffiti').innerText = graffiti[Math.floor(Math.random()*graffiti.length)];
                 }
-                if(en.x < -100) {
-                    en.el.remove(); game.enemies.splice(i, 1); game.score++;
-                    document.getElementById('vibe-val').innerText = game.score;
-                    if(game.score % 5 === 0) document.getElementById('venue-text').innerText = venues[Math.floor(game.score/5) % venues.length];
-                }
-            });
-
-            // Parallax Slogans
-            game.slogans.forEach((sl, i) => {
-                sl.x -= sl.speed; sl.el.style.left = sl.x + 'px';
-                if(sl.x < -200) { sl.el.remove(); game.slogans.splice(i, 1); }
-            });
-
-            if(Math.random() > 0.985) spawnEnemy();
-            if(Math.random() > 0.97) spawnSlogan();
-        }
+            }
+            if(p.x < -70) { p.top.remove(); p.bot.remove(); game.pipes.splice(i, 1); }
+        });
         requestAnimationFrame(loop);
     }
 
-    setupDock();
-    updateVisuals();
-    loop();
+    function die() {
+        game.active = false;
+        document.getElementById('final').innerText = game.score;
+        document.getElementById('over').style.display = 'flex';
+    }
+
+    draw();
 </script>
 </body>
 </html>
