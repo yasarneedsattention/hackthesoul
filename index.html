@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ART DEFICIT HARDCORE DISORDER</title>
+    <title>ADHD - ART DEFICIT HARDCORE DISORDER</title>
     <style>
         :root {
             --bg: #050505;
@@ -39,7 +39,7 @@
             align-items: center;
         }
 
-        /* Scanlines - Optimized: reduced opacity, strictly visual overlay */
+        /* Scanlines */
         .scanlines {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
@@ -57,24 +57,64 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100; background: var(--bg); padding: 20px; text-align: center;
             transition: opacity 0.5s ease;
-            will-change: opacity; /* Hint to browser */
+            will-change: opacity;
         }
+        
+        /* Main Title Text */
         h1 { 
-            font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.9; 
-            border-bottom: 4px solid var(--c1); 
-            padding-bottom: 20px; margin-bottom: 20px;
-            text-transform: uppercase; letter-spacing: -2px;
+            font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.1; 
+            margin: 0 0 20px 0;
+            text-transform: uppercase; letter-spacing: -1px;
+            color: var(--fg);
         }
-        h1 span { color: var(--c3); text-shadow: 2px 2px 0px var(--c2); }
-        .subtitle { font-size: 0.8rem; color: var(--dim); margin-bottom: 40px; letter-spacing: 2px; }
+        
+        /* The Giant Y_Y Art on Landing */
+        .landing-art {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            margin: 20px 0;
+        }
+        .landing-art text {
+            font-family: var(--font-main);
+            font-weight: 900;
+            font-size: 80px;
+            fill: var(--bg);
+            stroke: var(--c1);
+            stroke-width: 2px;
+            animation: glitch-anim 3s infinite alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { stroke: var(--c1); stroke-width: 2px; transform: skewX(0deg); }
+            20% { stroke: var(--c2); stroke-width: 4px; transform: skewX(-5deg); }
+            40% { stroke: var(--c3); transform: skewX(5deg); }
+            100% { stroke: var(--c1); transform: skewX(0deg); }
+        }
+
+        .subtitle { font-size: 0.9rem; color: var(--dim); margin-bottom: 40px; letter-spacing: 2px; }
+        
         .btn {
             background: var(--fg); color: var(--bg); border: none; padding: 20px 50px;
             font-family: var(--font-main); font-size: 1.5rem; font-weight: bold;
             cursor: pointer; text-transform: uppercase; 
             box-shadow: 6px 6px 0px var(--c2);
             transition: transform 0.1s;
+            margin-bottom: 40px;
         }
         .btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--c2); }
+
+        /* Big Credit */
+        .big-credit {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: bold;
+            color: var(--c3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 2px solid var(--dim);
+            padding-top: 20px;
+            width: 80%;
+        }
 
         /* --- DECK --- */
         #deck { display: none; width: 100%; height: 100%; perspective: 1200px; align-items: center; justify-content: center; }
@@ -83,7 +123,6 @@
             width: 90vw; height: 80vh; max-width: 500px;
             position: relative; transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.2);
-            /* Performance Optimization: */
             will-change: transform; 
             transform: translateZ(0); 
         }
@@ -98,7 +137,6 @@
             border: 2px solid var(--fg);
             background: var(--bg); display: flex; flex-direction: column; 
             overflow: hidden;
-            /* Optimized shadow: removed large blur radius */
             box-shadow: 0 0 20px rgba(0,0,0,0.8); 
         }
 
@@ -117,11 +155,32 @@
         /* FRONT SIDE */
         .face.front { transform: rotateY(180deg); padding: 20px; position: relative; }
         
+        /* The "Y_Y" Symbolism under the cards */
+        .watermark-yy {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12rem;
+            font-weight: 900;
+            color: var(--c2); /* Uses neon blue by default */
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.05; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.1; transform: translate(-50%, -50%) scale(1.1); filter: blur(2px); }
+        }
+
         .header {
             display: flex; justify-content: space-between; align-items: center;
             height: 30px; border-bottom: 1px solid var(--dim); margin-bottom: 10px;
             font-size: 0.7rem; color: var(--dim); letter-spacing: 1px;
-            flex-shrink: 0;
+            flex-shrink: 0; z-index: 1;
         }
         .id-badge { background: var(--fg); color: var(--bg); padding: 2px 6px; font-weight: bold; }
 
@@ -132,15 +191,15 @@
             position: relative;
             padding: 10px;
             overflow: hidden;
+            z-index: 1;
         }
 
         svg {
             width: 100%; height: 100%;
-            /* Removed drop-shadow filter for performance */
             overflow: visible;
         }
 
-        /* Neon Classes - OPTIMIZED: Removed Filters, relied on colors */
+        /* Neon Classes */
         .s-white { stroke: var(--fg); stroke-width: 3; fill: none; }
         .s-dim { stroke: var(--dim); stroke-width: 2; fill: none; }
         .s-c1 { stroke: var(--c1); stroke-width: 3; fill: none; }
@@ -154,6 +213,7 @@
             border-top: 1px solid var(--dim);
             padding-top: 15px;
             flex-shrink: 0;
+            z-index: 1;
         }
         .directive {
             font-size: clamp(1.4rem, 4vw, 2.2rem); 
@@ -180,10 +240,16 @@
 
     <div id="app">
         <div id="landing">
-            <h1>ART DEFICIT<br><span>HARDCORE</span></h1>
-            <div class="subtitle">VISUAL STRATEGY DECK</div>
-            <button class="btn" onclick="startApp()">START</button>
-            <div style="margin-top:20px; font-size: 0.7rem; color: #555">Yasar Needs Attention Y_Y</div>
+            <h1>ADHD<br>ART DEFICIT<br>HARDCORE DISORDER</h1>
+            
+            <svg class="landing-art" viewBox="0 0 200 100">
+                <text x="50%" y="80%" text-anchor="middle">Y_Y</text>
+            </svg>
+
+            <div class="subtitle">CREATIVE STRATEGY DECK v1.0</div>
+            <button class="btn" onclick="startApp()">DIAGNOSE ME</button>
+            
+            <div class="big-credit">Yasar Needs Attention</div>
         </div>
 
         <div id="deck" onclick="handleInteraction()">
@@ -194,9 +260,11 @@
                 </div>
 
                 <div class="face front">
+                    <div class="watermark-yy">Y_Y</div>
+
                     <div class="header">
                         <span class="id-badge" id="dispId">#001</span>
-                        <span>DIAGNOSTIC_MODE</span>
+                        <span>CLINICAL_MODE</span>
                     </div>
 
                     <div class="visual-container" id="visualTarget">
@@ -214,7 +282,6 @@
 
     <script>
         // --- DATA ---
-        // Complete dataset with syntax fixed
         const cards = [
           {id:1, text:"Repeat until it’s true.", meaning:"Repetition legitimizes a mistake; repeat a phrase 4 times to make it a hook.", visual:"Ouroboros"},
           {id:2, text:"Kill the intro.", meaning:"Start the song immediately with the vocal or the main hook; no buildup.", visual:"Scissors"},
