@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2AURA | Digital Twin Protocol</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #e0e0e0;
+            --accent: #00ff41; /* Cyber Green */
+            --sub-text: #888;
+            --border: #222;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid var(--border);
+            padding: 40px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .hero-text {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            color: var(--text);
+        }
+
+        h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            margin: 40px 0 20px;
+            border-left: 3px solid var(--accent);
+            padding-left: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            background: #0f0f0f;
+        }
+
+        .price {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        ul { list-style: none; color: var(--sub-text); font-size: 0.9rem; }
+        ul li::before { content: "> "; color: var(--accent); }
+
+        .form-group {
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #111;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #fff;
+        }
+
+        footer {
+            margin-top: 60px;
+            font-size: 0.7rem;
+            color: var(--sub-text);
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>2Aura</h1>
+            <p class="hero-text">Double your presence. Zero the effort. Build your high-fidelity Digital Twin today.</p>
+        </header>
+
+        <h2>// ACCESS_TIERS</h2>
+        <div class="grid">
+            <div class="card">
+                <span class="price">$299+</span>
+                <h3>Aura Basic</h3>
+                <ul>
+                    <li>AI Voice Cloning</li>
+                    <li>Talking-Head Avatar</li>
+                    <li>10 Videos / Month</li>
+                    <li>Millennial Hook Scripts</li>
+                </ul>
+            </div>
+            <div class="card">
+                <span class="price">$699+</span>
+                <h3>Aura Max</h3>
+                <ul>
+                    <li>DeepFace Motion Sync</li>
+                    <li>Video-to-Video Clone</li>
+                    <li>30 Videos / Month</li>
+                    <li>Global Omni-Posting</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>// CORE_FEATURES</h2>
+        <p style="color: var(--sub-text); font-size: 0.9rem;">
+            Capture your likeness once. 2Aura generates, scripts, and distributes your brand content across TikTok, Reels, and Shorts using your real voice and verified face data.
+        </p>
+
+        <div class="form-group">
+            <h2>// INITIALIZE_CONTACT</h2>
+            <form action="mailto:YOUR_EMAIL@HERE.COM" method="post" enctype="text/plain">
+                <input type="text" name="name" placeholder="IDENT_NAME" required>
+                <input type="email" name="email" placeholder="SECURE_EMAIL" required>
+                <textarea name="message" rows="5" placeholder="DESCRIBE_YOUR_BRAND_GOALS..."></textarea>
+                <button type="submit">ACTIVATE_AURAS</button>
+            </form>
+        </div>
+
+        <footer>
+            &copy; 2026 2AURA DIGITAL // SYSTEM_STATUS: ACTIVE
+        </footer>
+    </div>
+
+</body>
+</html>
