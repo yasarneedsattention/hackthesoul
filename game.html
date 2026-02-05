@@ -3,174 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLYPH-GRIND // STABLE_RETAIL</title>
+    <title>GLYPH-GRIND // ODYSSEY</title>
     <style>
         :root {
-            --bg: #EFEFEF; --gba: #1A1A1A; --orange: #FF4500; --yellow: #FFD700;
+            --bg: #121212; --fg: #FFFFFF; --orange: #FF4500; --yellow: #FFD700;
             --font: "Helvetica", sans-serif;
         }
+        * { box-sizing: border-box; touch-action: none; user-select: none; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: var(--font); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
 
-        body, html { 
-            margin: 0; padding: 0; background: var(--bg); 
-            font-family: var(--font); display: flex; justify-content: center; 
-            align-items: center; height: 100vh; overflow: hidden; 
-        }
+        /* THE CONTAINER */
+        #game-window { width: 100vw; height: 100vh; max-width: 500px; max-height: 800px; border: 4px solid #333; position: relative; overflow: hidden; background: #fff; color: #000; }
 
-        /* GBA FRAME */
-        #wrapper {
-            width: 90vw; max-width: 800px; aspect-ratio: 16/9;
-            background: var(--gba); border-radius: 40px; padding: 20px;
-            display: grid; grid-template-columns: 1fr 3fr 1fr; align-items: center;
-            box-shadow: 0 10px 0 #000; border: 4px solid #333;
-        }
+        /* DESIGNER DOCK */
+        #dock { position: absolute; top: 0; width: 100%; height: 60px; background: #000; display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow-x: auto; z-index: 100; border-bottom: 3px solid var(--orange); }
+        .mod { flex: 0 0 auto; border: 1px solid #fff; color: #fff; padding: 5px 10px; font-size: 9px; font-weight: 900; cursor: pointer; }
 
-        /* SCREEN */
-        #screen { background: #000; padding: 5px; border-radius: 10px; height: 90%; position: relative; }
-        #stage { 
-            width: 100%; height: 100%; background: #FFF; position: relative; 
-            overflow: hidden; border: 2px solid #000;
-        }
+        /* GAME ELEMENTS */
+        #world { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transform: translateZ(0); }
+        .player { position: absolute; bottom: 100px; left: 50px; width: 40px; height: 70px; display: flex; flex-direction: column; align-items: center; z-index: 50; }
+        .head { width: 35px; height: 35px; background: #000; border-radius: 40%; position: relative; border: 2px solid #000; }
+        .teeth { display: none; width: 25px; height: 8px; background: #fff; clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0); margin-top: 15px; margin-left: 5px; }
+        .ears { display: none; position: absolute; top: -10px; width: 100%; justify-content: space-between; }
+        .ear { width: 10px; height: 15px; background: #000; clip-path: polygon(50% 0, 0 100%, 100% 100%); }
+        .torso { width: 40px; height: 35px; background: #000; color: #fff; font-size: 7px; font-weight: 900; display: flex; justify-content: center; align-items: center; border: 2px solid #000; }
 
-        /* CHARACTERS */
-        .entity { 
-            position: absolute; bottom: 20px; width: 50px; height: 80px; 
-            display: flex; flex-direction: column; align-items: center;
-            transition: transform 0.05s; pointer-events: none;
-        }
-        .head { 
-            width: 40px; height: 40px; background: #000; border-radius: 45%; 
-            display: flex; justify-content: center; align-items: center;
-            position: relative; border: 2px solid #000;
-        }
-        .head::after { 
-            content: attr(data-label); position: absolute; top: -15px; 
-            font-size: 8px; font-weight: 900; color: #000;
-        }
-        .torso { 
-            width: 45px; height: 40px; background: #000; margin-top: 2px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 8px; font-weight: 900; color: #FFF; border: 2px solid #000;
-        }
+        .enemy { position: absolute; bottom: 100px; right: -50px; width: 40px; height: 70px; background: #000; display: flex; justify-content: center; align-items: center; color: #fff; font-weight: 900; font-size: 8px; }
+        .platform { position: absolute; bottom: 0; width: 200%; height: 100px; background: #000; border-top: 4px solid var(--yellow); }
 
-        /* UI/HUD */
-        #hud { 
-            position: absolute; top: 10px; width: 100%; 
-            display: flex; justify-content: space-around; z-index: 10;
-        }
-        .hp-bar { width: 80px; height: 10px; border: 2px solid #000; background: #EEE; }
-        .hp-fill { height: 100%; background: #000; width: 100%; transition: width 0.2s; }
-
-        /* CONTROLS */
-        .dpad { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px); }
-        .btn { background: #222; border: 1px solid #444; color: #FFF; display: flex; justify-content: center; align-items: center; cursor: pointer; border-radius: 5px; }
-        .action-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        .a-b { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: #FFF; cursor: pointer; box-shadow: 0 4px 0 #000; }
+        /* HUD */
+        #hud { position: absolute; top: 70px; left: 20px; font-weight: 900; font-size: 12px; z-index: 90; }
+        #score-val { color: var(--orange); }
 
         /* VFX */
-        .flash { animation: flash-anim 0.1s; }
-        @keyframes flash-anim { from { filter: invert(1); } to { filter: invert(0); } }
+        .slash { position: absolute; width: 60px; height: 4px; background: var(--orange); right: -50px; top: 30px; display: none; transform: rotate(-20deg); }
+        .hit { animation: flash 0.1s; }
+        @keyframes flash { from { background: red; } to { background: white; } }
     </style>
 </head>
-<body>
+<body onclick="handleInput()" onkeydown="if(event.code==='Space') handleInput()">
 
-<div id="wrapper">
-    <div class="dpad">
-        <div></div><div class="btn" id="up">▲</div><div></div>
-        <div class="btn" id="left">◀</div><div></div><div class="btn" id="right">▶</div>
-    </div>
+    <div id="game-window">
+        <div id="dock">
+            <div class="mod" onclick="apply('ears')">"EARS"</div>
+            <div class="mod" onclick="apply('teeth')">"TEETH"</div>
+            <div class="mod" onclick="apply('color', '#FF4500')">"ORANGE"</div>
+            <div class="mod" onclick="apply('color', '#FFD700')">"YELLOW"</div>
+            <div class="mod" onclick="apply('color', '#000000')">"BLACK"</div>
+            <div class="mod" onclick="apply('color', '#FF69B4')">"PINK"</div>
+        </div>
 
-    <div id="screen">
-        <div id="stage">
-            <div id="hud">
-                <div class="hp-bar"><div id="hp1" class="hp-fill"></div></div>
-                <div class="hp-bar"><div id="hp2" class="hp-fill" style="background:var(--yellow)"></div></div>
-            </div>
-            
-            <div id="p1" class="entity">
-                <div class="head" data-label='"YOU"'>● ●</div>
-                <div class="torso">"ITEM"</div>
-            </div>
+        <div id="hud">"VIBE_LEVEL": <span id="score-val">0</span></div>
 
-            <div id="p2" class="entity" style="left: 250px;">
-                <div class="head" data-label='"CPU"' style="background:var(--yellow)">✕ ✕</div>
-                <div class="torso" style="background:var(--yellow); color:#000;">"VOID"</div>
+        <div id="world">
+            <div id="p1" class="player">
+                <div class="ears" id="p-ears"><div class="ear"></div><div class="ear"></div></div>
+                <div class="head" id="p-head"><div class="teeth" id="p-teeth"></div></div>
+                <div class="torso" id="p-torso">"ITEM" <div class="slash" id="p-slash"></div></div>
             </div>
+            <div class="platform" id="ground"></div>
         </div>
     </div>
 
-    <div class="action-group">
-        <div class="a-b" id="btnA" style="background:var(--orange)">A</div>
-        <div class="a-b" id="btnB" style="background:#444">B</div>
-    </div>
-</div>
-
 <script>
     const state = {
-        p1: { x: 50, y: 0, vy: 0, hp: 100, dir: 1, atk: false },
-        p2: { x: 250, y: 0, vy: 0, hp: 100, dir: -1, atk: false },
-        inputs: {},
-        active: true
+        y: 0, vy: 0, 
+        score: 0,
+        gravity: 0.6,
+        jumping: false,
+        active: true,
+        enemies: [],
+        config: { color: '#000', ears: false, teeth: false }
     };
 
-    const bind = (id, key) => {
-        const el = document.getElementById(id);
-        el.onmousedown = el.ontouchstart = (e) => { e.preventDefault(); state.inputs[key] = true; };
-        el.onmouseup = el.ontouchend = () => state.inputs[key] = false;
-    };
-
-    bind('left', 'left'); bind('right', 'right'); bind('up', 'up');
-    bind('btnA', 'a'); bind('btnB', 'b');
-
-    // Keyboard support
-    window.onkeydown = (e) => state.inputs[e.key.toLowerCase()] = true;
-    window.onkeyup = (e) => state.inputs[e.key.toLowerCase()] = false;
-
-    function doAttack(attacker, victim, dmg) {
-        if (attacker.atk) return;
-        attacker.atk = true;
+    function apply(type, val) {
+        if(type === 'color') state.config.color = val;
+        else state.config[type] = !state.config[type];
         
-        const dist = Math.abs(attacker.x - victim.x);
-        if (dist < 60) {
-            victim.hp -= dmg;
-            document.getElementById('stage').classList.add('flash');
-            setTimeout(() => document.getElementById('stage').classList.remove('flash'), 100);
-            updateHUD();
-        }
-
-        setTimeout(() => attacker.atk = false, 300);
+        document.getElementById('p-head').style.background = state.config.color;
+        document.getElementById('p-torso').style.background = state.config.color;
+        document.getElementById('p-ears').style.display = state.config.ears ? 'flex' : 'none';
+        document.getElementById('p-teeth').style.display = state.config.teeth ? 'block' : 'none';
+        
+        // Update ear colors to match
+        const ears = document.querySelectorAll('.ear');
+        ears.forEach(e => e.style.background = state.config.color);
     }
 
-    function updateHUD() {
-        document.getElementById('hp1').style.width = Math.max(0, state.p1.hp) + '%';
-        document.getElementById('hp2').style.width = Math.max(0, state.p2.hp) + '%';
-        if (state.p2.hp <= 0) { alert("MATCH_WON"); location.reload(); }
+    function handleInput() {
+        if(!state.active) return;
+        state.vy = -10; // Flappy jump logic
+        state.jumping = true;
+    }
+
+    function spawnEnemy() {
+        const enemy = document.createElement('div');
+        enemy.className = 'enemy';
+        enemy.innerHTML = '"VOID"';
+        enemy.style.right = '-50px';
+        enemy.x = 500;
+        document.getElementById('world').appendChild(enemy);
+        state.enemies.push(enemy);
     }
 
     function loop() {
-        if (state.active) {
-            // P1 Logic
-            if (state.inputs['left'] || state.inputs['a']) { state.p1.x -= 4; state.p1.dir = -1; }
-            if (state.inputs['right'] || state.inputs['d']) { state.p1.x += 4; state.p1.dir = 1; }
-            if ((state.inputs['up'] || state.inputs['w']) && state.p1.y === 0) { state.p1.vy = -12; }
-            if (state.inputs['k'] || state.inputs['a']) doAttack(state.p1, state.p2, 10);
-            if (state.inputs['j'] || state.inputs['b']) doAttack(state.p1, state.p2, 5);
+        if(!state.active) return;
 
-            // CPU Logic
-            if (state.p2.x > state.p1.x + 60) state.p2.x -= 2;
-            else if (state.p2.x < state.p1.x - 60) state.p2.x += 2;
-            else if (Math.random() > 0.98) doAttack(state.p2, state.p1, 5);
+        // Physics
+        state.y -= state.vy;
+        state.vy += state.gravity;
 
-            // Simple Physics
-            [state.p1, state.p2].forEach(p => {
-                p.y -= p.vy; p.vy += 0.8;
-                if (p.y <= 0) { p.y = 0; p.vy = 0; }
-                p.x = Math.max(0, Math.min(300, p.x));
-                const el = document.getElementById(p === state.p1 ? 'p1' : 'p2');
-                el.style.transform = `translate(${p.x}px, ${-p.y}px) scaleX(${p.dir})`;
-            });
+        if(state.y <= 0) {
+            state.y = 0;
+            state.vy = 0;
+            state.jumping = false;
         }
+
+        // Keep player in bounds (Roof)
+        if(state.y > 600) state.y = 600;
+
+        document.getElementById('p1').style.bottom = (100 + state.y) + 'px';
+
+        // Enemy Logic
+        state.enemies.forEach((en, i) => {
+            en.x -= 5;
+            en.style.left = en.x + 'px';
+
+            // Automatic Combat Slash
+            const dist = en.x - 50;
+            if(dist < 80 && dist > 0) {
+                document.getElementById('p-slash').style.display = 'block';
+                // Combat result
+                if(dist < 30) {
+                    en.remove();
+                    state.enemies.splice(i, 1);
+                    state.score += 10;
+                    document.getElementById('score-val').innerText = state.score;
+                    document.getElementById('game-window').classList.add('hit');
+                    setTimeout(()=>document.getElementById('game-window').classList.remove('hit'), 50);
+                }
+            } else {
+                document.getElementById('p-slash').style.display = 'none';
+            }
+
+            // Lose condition
+            if(en.x < 0) {
+                state.active = false;
+                alert("ODYSSEY_TERMINATED. SCORE: " + state.score);
+                location.reload();
+            }
+        });
+
+        if(Math.random() > 0.985) spawnEnemy();
+
         requestAnimationFrame(loop);
     }
+
     loop();
 </script>
 </body>
