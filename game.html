@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GLYPH-GRIND // ADVANCE</title>
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --gba-shell: #2a2a2a;
+            --screen-bg: #F0F0F0;
+            --safety-orange: #FF4500;
+            --industrial-yellow: #FFD700;
+            --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: var(--font);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* GBA CHASSIS */
+        #console {
+            width: 95vw; max-width: 800px;
+            aspect-ratio: 16/9;
+            background: var(--gba-shell);
+            border-radius: 40px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+            align-items: center;
+            box-shadow: 0 20px 0 #000;
+            border: 4px solid #444;
+        }
+
+        /* THE SCREEN (Game Content) */
+        #screen-container {
+            background: #000;
+            padding: 10px;
+            border-radius: 10px;
+            height: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #game-viewport {
+            width: 100%; height: 100%;
+            background: var(--screen-bg);
+            position: relative;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* CONTROLS AREA */
+        .controls { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+        }
+        .d-btn { background: #111; border: 2px solid #333; cursor: pointer; color: white; display: flex; justify-content: center; align-items: center; font-size: 10px; border-radius: 5px; }
+        .d-btn:active { background: #333; }
+
+        .action-btns { display: flex; gap: 15px; transform: rotate(-15deg); }
+        .a-b-btn {
+            width: 50px; height: 50px;
+            background: #444; border-radius: 50%;
+            border: 4px solid #111;
+            color: white; font-weight: 900;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #000;
+        }
+        .a-b-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+        .a-btn { background: var(--safety-orange); }
+
+        /* GAME ENTITIES */
+        .player { position: absolute; bottom: 0; width: 40px; height: 70px; display: flex; flex-direction: column; align-items: center; }
+        .head { width: 35px; height: 35px; border-radius: 45%; border: 3px solid #000; display: flex; justify-content: center; align-items: center; font-size: 10px; position: relative; }
+        .head::after { content: attr(data-label); position: absolute; top: -12px; font-size: 7px; font-weight: 900; }
+        .body-block { width: 40px; height: 35px; margin-top: 2px; border: 2px solid #000; font-size: 7px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        
+        #hud { position: absolute; top: 5px; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; font-size: 8px; font-weight: 900; }
+        .hp-bar { width: 80px; height: 8px; border: 2px solid #000; background: #FFF; }
+        .hp-fill { height: 100%; background: #000; width: 100%; }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 600px) {
+            #console { grid-template-columns: 1fr; grid-template-rows: 2fr 1fr; height: 95vh; padding: 10px; }
+            .controls-row { display: flex; justify-content: space-around; width: 100%; }
+        }
+
+        .impact { animation: glitch 0.1s infinite; }
+        @keyframes glitch { 0% { filter: invert(0); } 50% { filter: invert(1); } 100% { filter: invert(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="console">
+        <div class="controls">
+            <div class="d-pad">
+                <div></div><div class="d-btn" id="up-btn">▲</div><div></div>
+                <div class="d-btn" id="left-btn">◀</div><div></div><div class="d-btn" id="right-btn">▶</div>
+                <div></div><div class="d-btn"></div><div></div>
+            </div>
+            <div style="font-size: 8px; margin-top: 10px;">"NAV_SYS"</div>
+        </div>
+
+        <div id="screen-container">
+            <div id="game-viewport">
+                <div id="hud">
+                    <div>P1 <div class="hp-bar"><div id="hp1" class="hp-fill"></div></div></div>
+                    <div>CPU <div class="hp-bar"><div id="hp2" class="hp-fill" style="background:var(--industrial-yellow)"></div></div></div>
+                </div>
+                
+                <div id="p1" class="player">
+                    <div class="head" data-label='"FACE"' style="background:#000; color:#FFF;">● ●</div>
+                    <div class="body-block" style="background:#000; color:#FFF;">"LOGO"</div>
+                </div>
+
+                <div id="p2" class="player">
+                    <div class="head" data-label='"CPU"' style="background:var(--industrial-yellow);">✕ ✕</div>
+                    <div class="body-block" style="background:var(--industrial-yellow);">"VOID"</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="action-btns">
+                <div class="a-b-btn" id="b-btn">B</div>
+                <div class="a-b-btn a-btn" id="a-btn">A</div>
+            </div>
+            <div style="font-size: 8px; margin-top: 20px;">"ACTION_LAB"</div>
+        </div>
+    </div>
+
+<script>
+    const state = {
+        p1: { x: 40, y: 0, vy: 0, hp: 100, isJumping: false, attacking: false, dir: 1 },
+        p2: { x: 220, y: 0, vy: 0, hp: 100, isJumping: false, attacking: false, dir: -1 },
+        keys: {},
+        active: true
+    };
+
+    // INPUT WRAPPER FOR BOTH DESKTOP & MOBILE
+    const inputs = { left: false, right: false, up: false, a: false, b: false };
+
+    function bindTouch(id, key) {
+        const btn = document.getElementById(id);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); inputs[key] = true; });
+        btn.addEventListener('touchend', (e) => { e.preventDefault(); inputs[key] = false; });
+        btn.addEventListener('mousedown', () => inputs[key] = true);
+        btn.addEventListener('mouseup', () => inputs[key] = false);
+    }
+
+    bindTouch('left-btn', 'left');
+    bindTouch('right-btn', 'right');
+    bindTouch('up-btn', 'up');
+    bindTouch('a-btn', 'a');
+    bindTouch('b-btn', 'b');
+
+    // KEYBOARD FALLBACK
+    window.addEventListener('keydown', e => {
+        if(e.key === 'ArrowLeft' || e.key === 'a') inputs.left = true;
+        if(e.key === 'ArrowRight' || e.key === 'd') inputs.right = true;
+        if(e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') inputs.up = true;
+        if(e.key === 'k') inputs.a = true;
+        if(e.key === 'j') inputs.b = true;
+    });
+    window.addEventListener('keyup', e => {
+        if(e.key === 'ArrowLeft' || e.key === 'a') inputs.left = false;
+        if(e.key === 'ArrowRight' || e.key === 'd') inputs.right = false;
+        if(e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') inputs.up = false;
+        if(e.key === 'k') inputs.a = false;
+        if(e.key === 'j') inputs.b = false;
+    });
+
+    function attack(p, target, type) {
+        if (p.attacking) return;
+        p.attacking = true;
+        const isA = type === 'a';
+        const reach = isA ? 60 : 40;
+        const dmg = isA ? 10 : 4;
+
+        if (Math.abs((p.x + (p.dir * reach)) - target.x) < 50 && Math.abs(p.y - target.y) < 60) {
+            target.hp -= dmg;
+            target.x += p.dir * (isA ? 30 : 5);
+            document.getElementById('game-viewport').classList.add('impact');
+            setTimeout(() => document.getElementById('game-viewport').classList.remove('impact'), 50);
+            updateHUD();
+        }
+        setTimeout(() => p.attacking = false, isA ? 400 : 200);
+    }
+
+    function updateHUD() {
+        document.getElementById('hp1').style.width = Math.max(0, state.p1.hp) + '%';
+        document.getElementById('hp2').style.width = Math.max(0, state.p2.hp) + '%';
+        if (state.p2.hp <= 0) { alert("SYSTEM_PURGED"); location.reload(); }
+    }
+
+    function loop() {
+        if (state.active) {
+            if (inputs.left) { state.p1.x -= 4; state.p1.dir = -1; }
+            if (inputs.right) { state.p1.x += 4; state.p1.dir = 1; }
+            if (inputs.up && !state.p1.isJumping) { state.p1.vy = -12; state.p1.isJumping = true; }
+            if (inputs.b) attack(state.p1, state.p2, 'b');
+            if (inputs.a) attack(state.p1, state.p2, 'a');
+
+            // AI (Simplified for mobile performance)
+            if (state.p2.x > state.p1.x + 60) state.p2.x -= 1.5;
+            else if (state.p2.x < state.p1.x - 60) state.p2.x += 1.5;
+
+            [state.p1, state.p2].forEach(p => {
+                p.y -= p.vy; p.vy += 0.7;
+                if (p.y <= 0) { p.y = 0; p.vy = 0; p.isJumping = false; }
+                p.x = Math.max(0, Math.min(260, p.x));
+            });
+        }
+        document.getElementById('p1').style.transform = `translate(${state.p1.x}px, ${-state.p1.y}px) scaleX(${state.p1.dir})`;
+        document.getElementById('p2').style.transform = `translate(${state.p2.x}px, ${-state.p2.y}px) scaleX(${state.p2.dir})`;
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
+</body>
+</html>
