@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ART DEFICIT HARDCORE DISORDER</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --fg: #ffffff;
+            --accent: #ffffff;
+            --dim: #444444;
+            --border-thick: 3px solid var(--fg);
+            --border-thin: 1px solid var(--fg);
+            --font-main: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-main);
+            overflow: hidden; /* Prevent scrolling */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- LANDING SCREEN --- */
+        #landing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            background: var(--bg);
+            padding: 20px;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            border-bottom: var(--border-thick);
+            padding-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--dim);
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            background: var(--fg);
+            color: var(--bg);
+            border: none;
+            padding: 20px 40px;
+            font-family: var(--font-main);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 5px 5px 0px var(--dim);
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0px var(--dim);
+        }
+
+        /* --- DECK VIEW --- */
+        #deck {
+            display: none; /* Hidden by default */
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-container {
+            width: 85vw;
+            height: 70vh;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .card-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Slide out animation for next card */
+        .card-container.slide-out {
+            animation: slideOut 0.4s forwards;
+        }
+
+        @keyframes slideOut {
+            to { transform: rotateY(180deg) translateX(-150%); opacity: 0; }
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: var(--border-thick);
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- CARD BACK --- */
+        .face.back {
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The Y_Y Geometric Pattern */
+        .pattern-bg {
+            width: 100%;
+            height: 100%;
+            /* Creating a repeating pattern of Y_Y */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ctext x='50%25' y='50%25' font-family='Courier New' font-weight='bold' font-size='10' fill='%23ffffff' text-anchor='middle' dy='.3em'%3EY_Y%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+            opacity: 0.8;
+            mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%);
+            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%);
+        }
+        
+        .back-center-logo {
+            position: absolute;
+            font-size: 3rem;
+            background: var(--bg);
+            padding: 10px;
+            border: var(--border-thin);
+            z-index: 2;
+        }
+
+        /* --- CARD FRONT --- */
+        .face.front {
+            transform: rotateY(180deg);
+            padding: 20px;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* The Y_Y Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 15rem;
+            opacity: 0.05;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: var(--border-thin);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+
+        .card-id {
+            font-size: 0.8rem;
+            background: var(--fg);
+            color: var(--bg);
+            padding: 2px 5px;
+        }
+
+        .visual-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            z-index: 1;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            max-height: 180px;
+            stroke: var(--fg);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .text-section {
+            z-index: 1;
+        }
+
+        .directive {
+            font-size: 1.8rem;
+            font-weight: bold;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .meaning {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #aaa;
+            border-left: 2px solid var(--fg);
+            padding-left: 10px;
+        }
+
+        /* Footer / Instructions */
+        .footer-nav {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--dim);
+            z-index: 10;
+        }
+        
+        .creator-credit {
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #333;
+        }
+
+        /* Glitch Animation Helpers */
+        .glitch-line {
+            stroke-dasharray: 5, 5;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to { stroke-dashoffset: 1000; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div id="app">
+        <div id="landing">
+            <h1>ART DEFICIT<br>HARDCORE<br>DISORDER</h1>
+            <div class="subtitle">CREATIVE STRATEGY DECK v1.0</div>
+            <button class="btn" onclick="startApp()">DIAGNOSE ME</button>
+            <div style="margin-top: 40px; font-size: 0.7rem;">Yasar Needs Attention Y_Y</div>
+        </div>
+
+        <div id="deck" onclick="handleDeckInteraction()">
+            <div class="card-container" id="cardElement">
+                
+                <div class="face back">
+                    <div class="pattern-bg"></div>
+                    <div class="back-center-logo">Y_Y</div>
+                </div>
+
+                <div class="face front">
+                    <div class="watermark">Y_Y</div>
+                    
+                    <div class="header-section">
+                        <span class="card-id" id="dispId">#001</span>
+                        <span>CLINICAL_MODE</span>
+                    </div>
+
+                    <div class="visual-container" id="visualTarget">
+                        </div>
+
+                    <div class="text-section">
+                        <div class="directive" id="dispText">Loading...</div>
+                        <div class="meaning" id="dispMeaning">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-nav" id="instructionText">TAP TO FLIP</div>
+            <div class="creator-credit">Yasar Needs Attention Y_Y</div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const cards = [
+          {id:1, text:"Repeat until it’s true.", meaning:"Repetition legitimizes a mistake; repeat a phrase 4 times to make it a hook.", visual:"Ouroboros"},
+          {id:2, text:"Kill the intro.", meaning:"Start the song immediately with the vocal or the main hook; no buildup.", visual:"Scissors"},
+          {id:3, text:"Steal the rhythm.", meaning:"Take the rhythm of a hit song’s melody but completely change the notes.", visual:"SplitDNA"},
+          {id:4, text:"Drop the bass to speak.", meaning:"Cut the bass and drums right before the chorus hits to create impact.", visual:"Anchor"},
+          {id:5, text:"The mistake is the hook.", meaning:"Keep the accidental vocal crack or wrong note; build the melody around it.", visual:"CrackedDiamond"},
+          {id:6, text:"Halve the speed.", meaning:"Play the melody at half-time (slow) over the fast drums for contrast.", visual:"Snail"},
+          {id:7, text:"Double the speed.", meaning:"Play the melody at double-time (fast) over slow drums to add energy.", visual:"Wing"},
+          {id:8, text:"One note is enough.", meaning:"Write a melody that stays on one pitch while the chords move underneath it.", visual:"Brick"},
+          {id:9, text:"Sing the drums.", meaning:"Record yourself beatboxing the rhythm, then replace it with real samples.", visual:"Mic"},
+          {id:10, text:"Strip the chords.", meaning:"Mute the harmony instruments; let the bass and vocals carry the song.", visual:"Ribcage"},
+          {id:11, text:"Make the lyrics dumber.", meaning:"Simplify complex poetry into conversational, primal phrases everyone understands.", visual:"Brain"},
+          {id:12, text:"Phonetics over grammar.", meaning:"Choose words that sound good percussively, even if the meaning is vague.", visual:"Mouth"},
+          {id:13, text:"Silence is loud.", meaning:"Put a hard stop/silence right after the busiest section of the song.", visual:"EmptyBubble"},
+          {id:14, text:"Start at the end.", meaning:"Take the outro ad-libs and move them to the very beginning as an intro.", visual:"LeftArrow"},
+          {id:15, text:"Tease the chorus.", meaning:"Play an instrumental or filtered version of the chorus early in the song.", visual:"Keyhole"},
+          {id:16, text:"Change the instrument.", meaning:"If a riff sounds bad, play the exact same notes on a completely different sound.", visual:"Morph"},
+          {id:17, text:"Lower the key.", meaning:"Transpose the song down 2 semitones to make the vocals sound warmer/richer.", visual:"StairsDown"},
+          {id:18, text:"Raise the key.", meaning:"Transpose up 1 semitone to add urgency and energy to a dull track.", visual:"LadderUp"},
+          {id:19, text:"Answer the question.", meaning:"Make the first phrase a 'question' (upward melody) and the second an 'answer'.", visual:"Chat"},
+          {id:20, text:"Remove the third.", meaning:"Play power chords (root + 5th) to make the emotion ambiguous.", visual:"MissingDot"},
+          {id:21, text:"Mumble the draft.", meaning:"Record a 'mumble track' to find the melody first, then fit words to the mumbles.", visual:"Blur"},
+          {id:22, text:"Limit the range.", meaning:"Force the melody to stay within one octave so it's easy to sing along to.", visual:"Box"},
+          {id:23, text:"Syncopate the vocal.", meaning:"If the drums are straight, make the vocals rhythmic and off-beat.", visual:"Dots"},
+          {id:24, text:"Straighten the vocal.", meaning:"If the drums are busy, make the vocals hold long, straight notes.", visual:"Ruler"},
+          {id:25, text:"Sample your own voice.", meaning:"Chop up a vocal take and play it like a synth lead.", visual:"Mirror"},
+          {id:26, text:"Whisper the layer.", meaning:"Record a whisper track and layer it under the main vocal for texture.", visual:"Ghost"},
+          {id:27, text:"Shout the layer.", meaning:"Record a shouting track, bury it low in the mix to add 'thickness.'", visual:"Megaphone"},
+          {id:28, text:"Distort the pretty.", meaning:"Put distortion or saturation on a beautiful sound to give it edge.", visual:"Thorn"},
+          {id:29, text:"Clean the dirty.", meaning:"Take a gritty sound and filter/reverb it until it sounds ethereal.", visual:"Soap"},
+          {id:30, text:"Three element rule.", meaning:"Mute everything except the three most important elements at any moment.", visual:"Triangle"},
+          {id:31, text:"Loop the first bar.", meaning:"Take the first bar of the chorus and repeat it 4 times. That’s your new hook.", visual:"Loop1"},
+          {id:32, text:"Rhyme with the wrong word.", meaning:"Use a slant rhyme (e.g., 'home' and 'stone') instead of a perfect rhyme.", visual:"Puzzle"},
+          {id:33, text:"Cut the fat.", meaning:"Remove the pre-chorus. Go straight from verse to chorus.", visual:"Knife"},
+          {id:34, text:"Solo the rhythm.", meaning:"Listen to just the drums and vocals. Does it groove? If not, rewrite.", visual:"Drumstick"},
+          {id:35, text:"Add a counter-melody.", meaning:"Add a high-pitched line that plays when the vocalist takes a breath.", visual:"Vines"},
+          {id:36, text:"The bridge is a departure.", meaning:"Change the chord progression completely for the bridge. Go somewhere else.", visual:"BrokenBridge"},
+          {id:37, text:"Return to home.", meaning:"Ensure the chorus melody lands firmly on the root note of the scale.", visual:"House"},
+          {id:38, text:"Delay the resolution.", meaning:"Don't play the root chord until the very last beat of the loop.", visual:"Cliff"},
+          {id:39, text:"Humanize the hi-hats.", meaning:"Manually adjust hi-hat velocities so no two hits are the same volume.", visual:"Hand"},
+          {id:40, text:"Lock the kick.", meaning:"Quantize the kick drum perfectly to the grid to anchor the track.", visual:"Lock"},
+          {id:41, text:"Space is an instrument.", meaning:"Treat the reverb tail as a musical part that fills the gaps between notes.", visual:"Helmet"},
+          {id:42, text:"Make it mono.", meaning:"Check if the chorus still hits hard when played from a single phone speaker.", visual:"Eye"},
+          {id:43, text:"High pass everything.", meaning:"Cut the low frequencies from everything except the kick and bass.", visual:"Cloud"},
+          {id:44, text:"Saturate the bus.", meaning:"Apply mild distortion to the entire drum group to glue it together.", visual:"Tape"},
+          {id:45, text:"Automate the energy.", meaning:"Slowly increase the volume or brightness as the song builds to the chorus.", visual:"Lightning"},
+          {id:46, text:"Don’t bore us.", meaning:"Introduce a new sound or variation every 8 bars.", visual:"Hourglass"},
+          {id:47, text:"Get to the chorus.", meaning:"Ensure the first chorus hits before the 1:00 mark (ideally by 0:45).", visual:"Stopwatch"},
+          {id:48, text:"Reference the top.", meaning:"A/B test your mix against a professional track you admire immediately.", visual:"Mountain"},
+          {id:49, text:"Unison power.", meaning:"Have the guitar and bass play the exact same riff for maximum power.", visual:"Hands"},
+          {id:50, text:"Call and response.", meaning:"Make the instruments 'reply' to the vocal lines.", visual:"Phone"},
+          {id:51, text:"Octave jump.", meaning:"Sing the second half of the verse an octave higher to build tension.", visual:"Jump"},
+          {id:52, text:"The title is the lyric.", meaning:"Ensure the song title appears in the lyrics of the chorus.", visual:"Book"},
+          {id:53, text:"Rhythmic contrast.", meaning:"If melody is fast, make chords long. If melody is slow, make chords rhythmic.", visual:"Jagged"},
+          {id:54, text:"Use a placeholder.", meaning:"Sing nonsense syllables ('da da da') to lock the melody, write words later.", visual:"Dummy"},
+          {id:55, text:"Switch the beat.", meaning:"Change the drum pattern from half-time to four-on-the-floor in the last chorus.", visual:"Flip"},
+          {id:56, text:"Dry vocals upfront.", meaning:"Remove reverb from the lead vocal to make it feel intimate and present.", visual:"Face"},
+          {id:57, text:"Widen the backing.", meaning:"Keep lead vocal center, pan backing vocals hard left/right.", visual:"Speakers"},
+          {id:58, text:"Filter the intro.", meaning:"Start the song sounding 'underwater' and open it up when the beat drops.", visual:"Funnel"},
+          {id:59, text:"Crowd vocals.", meaning:"Record yourself singing the hook 10 times and layer it to sound like a gang.", visual:"Crowd"},
+          {id:60, text:"Borrow a structure.", meaning:"Copy the exact bar-count structure of a hit song (Intro-Verse-Chorus-etc).", visual:"Blueprint"},
+          {id:61, text:"Use a foley sound.", meaning:"Use a recording of keys jingling or a door slamming as a percussion element.", visual:"Keys"},
+          {id:62, text:"Delete the reverb.", meaning:"Make the verse completely dry so the chorus feels huge when reverb hits.", visual:"Sun"},
+          {id:63, text:"Commit to audio.", meaning:"Bounce the MIDI to audio so you stop tweaking the synth settings.", visual:"Ice"},
+          {id:64, text:"Finish the track.", meaning:"A finished average song is better than an unfinished masterpiece.", visual:"Flag"},
+          {id:65, text:"Trust the first take.", meaning:"The first vocal recording often has the most emotion. Keep it.", visual:"Signature"},
+          {id:66, text:"Break the rules.", meaning:"If it sounds good, ignore every card in this deck.", visual:"Hammer"},
+          {id:67, text:"Ear candy every 4 bars.", meaning:"Add a subtle sound effect, fill, or vocal chop every 4 bars to keep attention.", visual:"Candy"},
+          {id:68, text:"Duck the ambience.", meaning:"Sidechain the reverb/delay to the vocal so it dips when you sing and swells when you stop.", visual:"Duck"},
+          {id:69, text:"Create a moment.", meaning:"Drop all instruments except the vocal for one beat before the final chorus.", visual:"Flash"},
+          {id:70, text:"Align the skins.", meaning:"Tune your drum samples to the key of the song.", visual:"Wrench"},
+          {id:71, text:"Find the resonant peak.", meaning:"Sweep a narrow EQ boost to find harsh frequencies, then cut them.", visual:"Bell"},
+          {id:72, text:"Parallel process.", meaning:"Mix a heavily distorted version of the drums underneath the clean version.", visual:"Parallel"},
+          {id:73, text:"Widen the top.", meaning:"Use a stereo widener only on frequencies above 5kHz.", visual:"InvertedTri"},
+          {id:74, text:"Center the bottom.", meaning:"Force everything below 120Hz into mono to tighten the mix.", visual:"Seabed"},
+          {id:75, text:"The telephone trick.", meaning:"Bandpass the vocal (cut lows and highs) for a bridge or intro effect.", visual:"Rotary"},
+          {id:76, text:"Layer the snap.", meaning:"Layer a recorded finger snap or clap over the electronic snare for texture.", visual:"Snap"},
+          {id:77, text:"Ghost the snare.", meaning:"Add very quiet snare hits between the main beats to add groove.", visual:"FaintCircle"},
+          {id:78, text:"Arpeggiate the chord.", meaning:"Instead of strumming, play the chord notes one by one in a rhythm.", visual:"Stairs"},
+          {id:79, text:"Invert the bass.", meaning:"If the chord is C Major, play an E on the bass (1st inversion) to create tension.", visual:"NoteFlip"},
+          {id:80, text:"Pedal the tone.", meaning:"Keep the bass note the same while the chords change above it.", visual:"Pedal"},
+          {id:81, text:"Walk the bass.", meaning:"Connect two chords by playing scalar notes in the bass between them.", visual:"Foot"},
+          {id:82, text:"Slide into the note.", meaning:"Use a pitch bend or slide to scoop up into the main melody note.", visual:"Slide"},
+          {id:83, text:"Gate the stutter.", meaning:"Use a rhythmic noise gate to turn a sustained pad into a percussion element.", visual:"Fence"},
+          {id:84, text:"Re-amp the soft.", meaning:"Play a soft-synth through a real guitar amp and record it to add 'air.'", visual:"Amp"},
+          {id:85, text:"Check the car.", meaning:"If the mix doesn't sound good in a car, the mix isn't done.", visual:"Car"},
+          {id:86, text:"Check the door.", meaning:"Listen to your track from the next room. What stands out? What is missing?", visual:"Door"},
+          {id:87, text:"Reference pink noise.", meaning:"Balance your track levels against a pink noise generator.", visual:"Static"},
+          {id:88, text:"Change the environment.", meaning:"If you are stuck, change the lighting in your room or go to a coffee shop.", visual:"Palm"},
+          {id:89, text:"Specifics over generics.", meaning:"Don't write 'I drove my car.' Write 'I drove my 98 Honda.'", visual:"Scope"},
+          {id:90, text:"Show, don't tell.", meaning:"Don't say 'I was sad.' Describe the rain on the window.", visual:"EyeFilm"},
+          {id:91, text:"The twist ending.", meaning:"Change the meaning of the chorus lyrics in the final repetition.", visual:"Knot"},
+          {id:92, text:"Rename the project.", meaning:"Psychologically reset by 'Save As' > 'Song Title_Final_V1'.", visual:"Folder"},
+          {id:93, text:"Five minute limit.", meaning:"Give yourself 5 minutes to finish a specific task. Speed prevents overthinking.", visual:"Timer"},
+          {id:94, text:"Bounce in place.", meaning:"Render the MIDI to audio immediately to commit to the sound.", visual:"Ball"},
+          {id:95, text:"Template update.", meaning:"Save your current channel strips as a template for the next song.", visual:"Grid"},
+          {id:96, text:"Clone the memory.", meaning:"Backup your project. Right now.", visual:"Drives"},
+          {id:97, text:"Export and listen.", meaning:"You can't judge a mix while looking at the waveforms. Export it and listen.", visual:"Export"},
+          {id:98, text:"Color code.", meaning:"Organize your tracks by color (Drums=Red, Bass=Blue) for mental clarity.", visual:"Rainbow"},
+          {id:99, text:"Group the bus.", meaning:"Send all drums to one fader. Process them as a single instrument.", visual:"Bus"},
+          {id:100, text:"De-ess the bright.", meaning:"Use a de-esser to tame harsh 'S' and 'T' sounds on vocals and cymbals.", visual:"MuteSnake"},
+          {id:101, text:"Check the phase.", meaning:"Flip the phase button on your drums. If bass increases, keep it.", visual:"Cancel"},
+          {id:102, text:"Listen low.", meaning:"Turn the volume way down. If you can hear the vocal and snare, the balance is good.", visual:"Knob"},
+          {id:103, text:"Swap the sample.", meaning:"If the kick drum isn't working, don't EQ it. Just replace the sample.", visual:"Recycle"},
+          {id:104, text:"Telegraph the drop.", meaning:"Use a riser, a reverse cymbal, or a drum roll to tell the listener 'here it comes.'", visual:"Rise"},
+          {id:105, text:"Fake the ending.", meaning:"Stop the song completely, then bring the chorus back for one last round.", visual:"Stop"},
+          {id:106, text:"Harmonize the word.", meaning:"Add vocal harmonies only on specific important words, not the whole line.", visual:"Blocks"},
+          {id:107, text:"Automate the width.", meaning:"Make the verses mono/narrow and the choruses wide/stereo.", visual:"Accordion"},
+          {id:108, text:"Crush the room.", meaning:"Heavily compress the room microphone to make the drums sound explosive.", visual:"Compactor"},
+          {id:109, text:"Tape stop.", meaning:"Slow down the audio pitch/speed to a halt for a transition effect.", visual:"Reel"},
+          {id:110, text:"Vinyl crackle.", meaning:"Add a subtle layer of noise to fill the uncomfortable digital silence.", visual:"Needle"},
+          {id:111, text:"Radio filter.", meaning:"EQ the drums to sound like a small radio for the intro, then bypass it.", visual:"Tower"},
+          {id:112, text:"Megaphone distortion.", meaning:"Add distortion to the vocal for a specific aggressive section.", visual:"Speaker"},
+          {id:113, text:"Octave down.", meaning:"Layer a pitched-down vocal underneath the lead for 'body' and 'weight.'", visual:"Down"},
+          {id:114, text:"Octave up.", meaning:"Layer a pitched-up vocal in the background for 'shimmer' and 'pop.'", visual:"Up"},
+          {id:115, text:"Vocoder layer.", meaning:"Layer a vocoder track under the singing to lock the pitch perfectly.", visual:"Robot"},
+          {id:116, text:"Autotune as effect.", meaning:"Crank the retune speed to 0 for that robotic, modern pop sound.", visual:"StairLine"},
+          {id:117, text:"Transparent fix.", meaning:"Tune the vocal manually (Melodyne) so it sounds perfect but natural.", visual:"BandAid"},
+          {id:118, text:"Breath control.", meaning:"Manually lower the volume of breath sounds (don't delete them fully).", visual:"Lung"},
+          {id:119, text:"Plosive check.", meaning:"High-pass filter the vocal at 100Hz to remove 'P' pops.", visual:"Shield"},
+          {id:120, text:"Gain stage.", meaning:"Ensure no plugin is clipping red before it hits the master fader.", visual:"Meter"},
+          {id:121, text:"Listen to the silence.", meaning:"Are the gaps between notes clean? Noise gate the background hiss.", visual:"Moon"},
+          {id:122, text:"Reset the ears.", meaning:"Take a 15-minute break. Your ears are fatigued and lying to you.", visual:"Coffee"},
+          {id:123, text:"Save as new.", meaning:"Never overwrite. Always 'Save As.' Keep your history.", visual:"Disk"}
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let currentDeck = [];
+        let currentIndex = 0;
+        let isFlipped = false;
+        let isAnimating = false;
+
+        // --- GRAPHICS ENGINE ---
+        function generateIcon(tag) {
+            // Standard SVG configuration
+            const s = (content) => `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">${content}</svg>`;
+            
+            // Specific Shapes (Examples)
+            switch(tag) {
+                case "Ouroboros":
+                    return s(`<circle cx="50" cy="50" r="35" stroke-dasharray="180" transform="rotate(-45 50 50)" /><path d="M75 50 L85 45 L85 55 Z" fill="white"/>`);
+                case "Scissors":
+                    return s(`<line x1="20" y1="20" x2="80" y2="80" /><line x1="80" y1="20" x2="20" y2="80" /><circle cx="20" cy="20" r="5" /><circle cx="20" cy="80" r="5" />`);
+                case "Triangle":
+                    return s(`<polygon points="50,15 85,85 15,85" />`);
+                case "Circle":
+                    return s(`<circle cx="50" cy="50" r="35" />`);
+                case "Stop":
+                    return s(`<rect x="20" y="20" width="60" height="60" />`);
+                case "LeftArrow":
+                    return s(`<line x1="80" y1="50" x2="20" y2="50" /><polyline points="40,30 20,50 40,70" />`);
+                case "Lightning":
+                    return s(`<polyline points="60,10 40,40 70,40 30,90" fill="none" />`);
+                case "Grid":
+                    return s(`<line x1="33" y1="10" x2="33" y2="90" /><line x1="66" y1="10" x2="66" y2="90" /><line x1="10" y1="33" x2="90" y2="33" /><line x1="10" y1="66" x2="90" y2="66" />`);
+                case "Tape":
+                    return s(`<circle cx="30" cy="50" r="15" /><circle cx="70" cy="50" r="15" /><rect x="20" y="45" width="60" height="10" stroke="none" fill="white" opacity="0.5"/>`);
+                default:
+                    // Procedural Glitch Art Generator
+                    return generateGlitchArt();
+            }
+        }
+
+        function generateGlitchArt() {
+            let svgContent = '';
+            // Generate 3-5 random primitives
+            const count = Math.floor(Math.random() * 3) + 3;
+            
+            for(let i=0; i<count; i++) {
+                const type = Math.random();
+                const x1 = Math.floor(Math.random() * 100);
+                const y1 = Math.floor(Math.random() * 100);
+                const x2 = Math.floor(Math.random() * 100);
+                const y2 = Math.floor(Math.random() * 100);
+                
+                if (type < 0.33) {
+                    // Random Line
+                    svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="glitch-line" />`;
+                } else if (type < 0.66) {
+                    // Random Circle
+                    const r = Math.floor(Math.random() * 20) + 5;
+                    svgContent += `<circle cx="${x1}" cy="${y1}" r="${r}" fill="none" />`;
+                } else {
+                    // Random Rect
+                    const w = Math.floor(Math.random() * 40);
+                    const h = Math.floor(Math.random() * 40);
+                    svgContent += `<rect x="${x1}" y="${y1}" width="${w}" height="${h}" fill="none" />`;
+                }
+            }
+            return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">${svgContent}</svg>`;
+        }
+
+        // --- APP LOGIC ---
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startApp() {
+            document.getElementById('landing').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('landing').style.display = 'none';
+                document.getElementById('deck').style.display = 'flex';
+                // Initialize deck
+                currentDeck = shuffle([...cards]);
+                loadCard(0);
+            }, 500);
+        }
+
+        function loadCard(index) {
+            const card = currentDeck[index];
+            const visual = generateIcon(card.visual);
+            
+            // Populate DOM
+            document.getElementById('dispId').innerText = `#${String(card.id).padStart(3, '0')}`;
+            document.getElementById('dispText').innerText = card.text;
+            document.getElementById('dispMeaning').innerText = card.meaning;
+            document.getElementById('visualTarget').innerHTML = visual;
+        }
+
+        function handleDeckInteraction() {
+            if (isAnimating) return;
+
+            const cardEl = document.getElementById('cardElement');
+            const navText = document.getElementById('instructionText');
+
+            if (!isFlipped) {
+                // FLIP ACTION
+                cardEl.classList.add('flipped');
+                isFlipped = true;
+                navText.innerText = "TAP FOR NEXT DIAGNOSIS";
+            } else {
+                // NEXT CARD ACTION
+                isAnimating = true;
+                cardEl.classList.add('slide-out');
+
+                setTimeout(() => {
+                    // Reset positions and load new data
+                    isFlipped = false;
+                    cardEl.classList.remove('flipped');
+                    cardEl.classList.remove('slide-out');
+                    
+                    // Increment and Loop
+                    currentIndex++;
+                    if (currentIndex >= currentDeck.length) {
+                        currentDeck = shuffle([...cards]);
+                        currentIndex = 0;
+                    }
+                    
+                    loadCard(currentIndex);
+                    navText.innerText = "TAP TO FLIP";
+                    isAnimating = false;
+                }, 400); // Wait for animation
+            }
+        }
+    </script>
+</body>
+</html>
