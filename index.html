@@ -6,12 +6,16 @@
     <title>ART DEFICIT HARDCORE DISORDER</title>
     <style>
         :root {
-            --bg: #000000;
+            /* CYBERPUNK PALETTE */
+            --bg: #050505;
             --fg: #ffffff;
-            --accent: #ffffff;
-            --dim: #444444;
+            --neon-pink: #ff00ff;
+            --neon-yellow: #fefe33;
+            --neon-cyan: #00ffff;
+            --dim: #666666;
+            
             --border-thick: 3px solid var(--fg);
-            --border-thin: 1px solid var(--fg);
+            --border-thin: 1px solid var(--dim);
             --font-main: 'Courier New', Courier, monospace;
         }
 
@@ -29,20 +33,20 @@
             background-color: var(--bg);
             color: var(--fg);
             font-family: var(--font-main);
-            overflow: hidden; /* Prevent scrolling */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* CRT Scanline Effect */
+        /* CRT Scanline Effect - Made slightly more subtle for readability */
         .scanlines {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
             z-index: 9999;
@@ -80,37 +84,41 @@
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: -2px;
-            border-bottom: var(--border-thick);
+            color: var(--fg);
+            border-bottom: 3px solid var(--neon-cyan);
             padding-bottom: 20px;
+            text-shadow: 2px 2px 0px var(--neon-pink);
         }
 
         .subtitle {
-            font-size: 0.8rem;
-            color: var(--dim);
+            font-size: 1rem;
+            color: var(--neon-yellow);
             margin-bottom: 40px;
+            letter-spacing: 2px;
         }
 
         .btn {
-            background: var(--fg);
-            color: var(--bg);
+            background: var(--neon-cyan);
+            color: #000;
             border: none;
             padding: 20px 40px;
             font-family: var(--font-main);
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 900;
             cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 5px 5px 0px var(--dim);
+            box-shadow: 5px 5px 0px var(--neon-pink);
+            transition: transform 0.1s;
         }
 
         .btn:active {
             transform: translate(2px, 2px);
-            box-shadow: 3px 3px 0px var(--dim);
+            box-shadow: 3px 3px 0px var(--neon-pink);
         }
 
         /* --- DECK VIEW --- */
         #deck {
-            display: none; /* Hidden by default */
+            display: none;
             width: 100%;
             height: 100%;
             perspective: 1000px;
@@ -132,7 +140,6 @@
             transform: rotateY(180deg);
         }
 
-        /* Slide out animation for next card */
         .card-container.slide-out {
             animation: slideOut 0.4s forwards;
         }
@@ -146,58 +153,58 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border: var(--border-thick);
+            border: 2px solid var(--fg);
             background: var(--bg);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         }
 
         /* --- CARD BACK --- */
         .face.back {
-            background-color: var(--bg);
+            background-color: #111;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-color: var(--dim);
         }
 
-        /* The Y_Y Geometric Pattern */
         .pattern-bg {
             width: 100%;
             height: 100%;
-            /* Creating a repeating pattern of Y_Y */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ctext x='50%25' y='50%25' font-family='Courier New' font-weight='bold' font-size='10' fill='%23ffffff' text-anchor='middle' dy='.3em'%3EY_Y%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ctext x='50%25' y='50%25' font-family='Courier New' font-weight='bold' font-size='10' fill='%23333333' text-anchor='middle' dy='.3em'%3EY_Y%3C/text%3E%3C/svg%3E");
             background-repeat: repeat;
-            opacity: 0.8;
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%);
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%);
+            opacity: 0.5;
         }
         
         .back-center-logo {
             position: absolute;
             font-size: 3rem;
-            background: var(--bg);
+            background: #000;
+            color: var(--neon-cyan);
             padding: 10px;
-            border: var(--border-thin);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 4px 4px 0px var(--neon-pink);
             z-index: 2;
         }
 
         /* --- CARD FRONT --- */
         .face.front {
             transform: rotateY(180deg);
-            padding: 20px;
+            padding: 25px;
             justify-content: space-between;
             position: relative;
         }
 
-        /* The Y_Y Watermark */
         .watermark {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
             font-size: 15rem;
-            opacity: 0.05;
+            color: var(--neon-cyan);
+            opacity: 0.03;
             font-weight: bold;
             pointer-events: none;
             z-index: 0;
@@ -207,17 +214,20 @@
         .header-section {
             display: flex;
             justify-content: space-between;
-            border-bottom: var(--border-thin);
+            border-bottom: 1px solid var(--dim);
             padding-bottom: 10px;
             margin-bottom: 10px;
             z-index: 1;
+            font-size: 0.7rem;
+            color: var(--dim);
+            letter-spacing: 1px;
         }
 
         .card-id {
-            font-size: 0.8rem;
-            background: var(--fg);
-            color: var(--bg);
-            padding: 2px 5px;
+            background: var(--neon-pink);
+            color: #000;
+            font-weight: bold;
+            padding: 2px 6px;
         }
 
         .visual-container {
@@ -232,41 +242,61 @@
 
         svg {
             width: 100%;
-            max-height: 180px;
-            stroke: var(--fg);
-            stroke-width: 2;
+            max-height: 160px;
+            stroke: var(--neon-cyan); /* CYAN VISUALS */
+            stroke-width: 2.5;
             fill: none;
+            filter: drop-shadow(0px 0px 4px rgba(0, 255, 255, 0.4));
         }
 
         .text-section {
             z-index: 1;
+            margin-bottom: 15px;
         }
 
         .directive {
-            font-size: 1.8rem;
-            font-weight: bold;
-            line-height: 1.1;
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
             margin-bottom: 15px;
             text-transform: uppercase;
+            color: var(--neon-yellow); /* YELLOW MAIN TEXT */
+            text-shadow: 0px 0px 5px rgba(254, 254, 51, 0.3);
+        }
+
+        /* Highlight the first word (Action) */
+        .highlight-action {
+            color: var(--neon-pink);
+            display: inline-block;
         }
 
         .meaning {
-            font-size: 0.9rem;
+            font-size: 1rem;
             line-height: 1.4;
-            color: #aaa;
-            border-left: 2px solid var(--fg);
-            padding-left: 10px;
+            color: #ffffff; /* WHITE READING TEXT */
+            border-left: 3px solid var(--neon-pink);
+            padding-left: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
         }
 
         /* Footer / Instructions */
         .footer-nav {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             width: 100%;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
+            font-weight: bold;
             color: var(--dim);
             z-index: 10;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
         
         .creator-credit {
@@ -275,13 +305,14 @@
             width: 100%;
             text-align: center;
             font-size: 0.6rem;
-            color: #333;
+            color: #444;
         }
 
         /* Glitch Animation Helpers */
         .glitch-line {
             stroke-dasharray: 5, 5;
             animation: dash 20s linear infinite;
+            stroke: var(--neon-pink);
         }
         
         @keyframes dash {
@@ -297,9 +328,9 @@
     <div id="app">
         <div id="landing">
             <h1>ART DEFICIT<br>HARDCORE<br>DISORDER</h1>
-            <div class="subtitle">CREATIVE STRATEGY DECK v1.0</div>
+            <div class="subtitle">CREATIVE STRATEGY DECK v2.0</div>
             <button class="btn" onclick="startApp()">DIAGNOSE ME</button>
-            <div style="margin-top: 40px; font-size: 0.7rem;">Yasar Needs Attention Y_Y</div>
+            <div style="margin-top: 40px; font-size: 0.7rem; color: #555;">Yasar Needs Attention Y_Y</div>
         </div>
 
         <div id="deck" onclick="handleDeckInteraction()">
@@ -315,7 +346,7 @@
                     
                     <div class="header-section">
                         <span class="card-id" id="dispId">#001</span>
-                        <span>CLINICAL_MODE</span>
+                        <span style="color:var(--neon-cyan)">CLINICAL_MODE_ACTIVE</span>
                     </div>
 
                     <div class="visual-container" id="visualTarget">
@@ -426,176 +457,4 @@
           {id:88, text:"Change the environment.", meaning:"If you are stuck, change the lighting in your room or go to a coffee shop.", visual:"Palm"},
           {id:89, text:"Specifics over generics.", meaning:"Don't write 'I drove my car.' Write 'I drove my 98 Honda.'", visual:"Scope"},
           {id:90, text:"Show, don't tell.", meaning:"Don't say 'I was sad.' Describe the rain on the window.", visual:"EyeFilm"},
-          {id:91, text:"The twist ending.", meaning:"Change the meaning of the chorus lyrics in the final repetition.", visual:"Knot"},
-          {id:92, text:"Rename the project.", meaning:"Psychologically reset by 'Save As' > 'Song Title_Final_V1'.", visual:"Folder"},
-          {id:93, text:"Five minute limit.", meaning:"Give yourself 5 minutes to finish a specific task. Speed prevents overthinking.", visual:"Timer"},
-          {id:94, text:"Bounce in place.", meaning:"Render the MIDI to audio immediately to commit to the sound.", visual:"Ball"},
-          {id:95, text:"Template update.", meaning:"Save your current channel strips as a template for the next song.", visual:"Grid"},
-          {id:96, text:"Clone the memory.", meaning:"Backup your project. Right now.", visual:"Drives"},
-          {id:97, text:"Export and listen.", meaning:"You can't judge a mix while looking at the waveforms. Export it and listen.", visual:"Export"},
-          {id:98, text:"Color code.", meaning:"Organize your tracks by color (Drums=Red, Bass=Blue) for mental clarity.", visual:"Rainbow"},
-          {id:99, text:"Group the bus.", meaning:"Send all drums to one fader. Process them as a single instrument.", visual:"Bus"},
-          {id:100, text:"De-ess the bright.", meaning:"Use a de-esser to tame harsh 'S' and 'T' sounds on vocals and cymbals.", visual:"MuteSnake"},
-          {id:101, text:"Check the phase.", meaning:"Flip the phase button on your drums. If bass increases, keep it.", visual:"Cancel"},
-          {id:102, text:"Listen low.", meaning:"Turn the volume way down. If you can hear the vocal and snare, the balance is good.", visual:"Knob"},
-          {id:103, text:"Swap the sample.", meaning:"If the kick drum isn't working, don't EQ it. Just replace the sample.", visual:"Recycle"},
-          {id:104, text:"Telegraph the drop.", meaning:"Use a riser, a reverse cymbal, or a drum roll to tell the listener 'here it comes.'", visual:"Rise"},
-          {id:105, text:"Fake the ending.", meaning:"Stop the song completely, then bring the chorus back for one last round.", visual:"Stop"},
-          {id:106, text:"Harmonize the word.", meaning:"Add vocal harmonies only on specific important words, not the whole line.", visual:"Blocks"},
-          {id:107, text:"Automate the width.", meaning:"Make the verses mono/narrow and the choruses wide/stereo.", visual:"Accordion"},
-          {id:108, text:"Crush the room.", meaning:"Heavily compress the room microphone to make the drums sound explosive.", visual:"Compactor"},
-          {id:109, text:"Tape stop.", meaning:"Slow down the audio pitch/speed to a halt for a transition effect.", visual:"Reel"},
-          {id:110, text:"Vinyl crackle.", meaning:"Add a subtle layer of noise to fill the uncomfortable digital silence.", visual:"Needle"},
-          {id:111, text:"Radio filter.", meaning:"EQ the drums to sound like a small radio for the intro, then bypass it.", visual:"Tower"},
-          {id:112, text:"Megaphone distortion.", meaning:"Add distortion to the vocal for a specific aggressive section.", visual:"Speaker"},
-          {id:113, text:"Octave down.", meaning:"Layer a pitched-down vocal underneath the lead for 'body' and 'weight.'", visual:"Down"},
-          {id:114, text:"Octave up.", meaning:"Layer a pitched-up vocal in the background for 'shimmer' and 'pop.'", visual:"Up"},
-          {id:115, text:"Vocoder layer.", meaning:"Layer a vocoder track under the singing to lock the pitch perfectly.", visual:"Robot"},
-          {id:116, text:"Autotune as effect.", meaning:"Crank the retune speed to 0 for that robotic, modern pop sound.", visual:"StairLine"},
-          {id:117, text:"Transparent fix.", meaning:"Tune the vocal manually (Melodyne) so it sounds perfect but natural.", visual:"BandAid"},
-          {id:118, text:"Breath control.", meaning:"Manually lower the volume of breath sounds (don't delete them fully).", visual:"Lung"},
-          {id:119, text:"Plosive check.", meaning:"High-pass filter the vocal at 100Hz to remove 'P' pops.", visual:"Shield"},
-          {id:120, text:"Gain stage.", meaning:"Ensure no plugin is clipping red before it hits the master fader.", visual:"Meter"},
-          {id:121, text:"Listen to the silence.", meaning:"Are the gaps between notes clean? Noise gate the background hiss.", visual:"Moon"},
-          {id:122, text:"Reset the ears.", meaning:"Take a 15-minute break. Your ears are fatigued and lying to you.", visual:"Coffee"},
-          {id:123, text:"Save as new.", meaning:"Never overwrite. Always 'Save As.' Keep your history.", visual:"Disk"}
-        ];
-
-        // --- STATE MANAGEMENT ---
-        let currentDeck = [];
-        let currentIndex = 0;
-        let isFlipped = false;
-        let isAnimating = false;
-
-        // --- GRAPHICS ENGINE ---
-        function generateIcon(tag) {
-            // Standard SVG configuration
-            const s = (content) => `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">${content}</svg>`;
-            
-            // Specific Shapes (Examples)
-            switch(tag) {
-                case "Ouroboros":
-                    return s(`<circle cx="50" cy="50" r="35" stroke-dasharray="180" transform="rotate(-45 50 50)" /><path d="M75 50 L85 45 L85 55 Z" fill="white"/>`);
-                case "Scissors":
-                    return s(`<line x1="20" y1="20" x2="80" y2="80" /><line x1="80" y1="20" x2="20" y2="80" /><circle cx="20" cy="20" r="5" /><circle cx="20" cy="80" r="5" />`);
-                case "Triangle":
-                    return s(`<polygon points="50,15 85,85 15,85" />`);
-                case "Circle":
-                    return s(`<circle cx="50" cy="50" r="35" />`);
-                case "Stop":
-                    return s(`<rect x="20" y="20" width="60" height="60" />`);
-                case "LeftArrow":
-                    return s(`<line x1="80" y1="50" x2="20" y2="50" /><polyline points="40,30 20,50 40,70" />`);
-                case "Lightning":
-                    return s(`<polyline points="60,10 40,40 70,40 30,90" fill="none" />`);
-                case "Grid":
-                    return s(`<line x1="33" y1="10" x2="33" y2="90" /><line x1="66" y1="10" x2="66" y2="90" /><line x1="10" y1="33" x2="90" y2="33" /><line x1="10" y1="66" x2="90" y2="66" />`);
-                case "Tape":
-                    return s(`<circle cx="30" cy="50" r="15" /><circle cx="70" cy="50" r="15" /><rect x="20" y="45" width="60" height="10" stroke="none" fill="white" opacity="0.5"/>`);
-                default:
-                    // Procedural Glitch Art Generator
-                    return generateGlitchArt();
-            }
-        }
-
-        function generateGlitchArt() {
-            let svgContent = '';
-            // Generate 3-5 random primitives
-            const count = Math.floor(Math.random() * 3) + 3;
-            
-            for(let i=0; i<count; i++) {
-                const type = Math.random();
-                const x1 = Math.floor(Math.random() * 100);
-                const y1 = Math.floor(Math.random() * 100);
-                const x2 = Math.floor(Math.random() * 100);
-                const y2 = Math.floor(Math.random() * 100);
-                
-                if (type < 0.33) {
-                    // Random Line
-                    svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="glitch-line" />`;
-                } else if (type < 0.66) {
-                    // Random Circle
-                    const r = Math.floor(Math.random() * 20) + 5;
-                    svgContent += `<circle cx="${x1}" cy="${y1}" r="${r}" fill="none" />`;
-                } else {
-                    // Random Rect
-                    const w = Math.floor(Math.random() * 40);
-                    const h = Math.floor(Math.random() * 40);
-                    svgContent += `<rect x="${x1}" y="${y1}" width="${w}" height="${h}" fill="none" />`;
-                }
-            }
-            return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">${svgContent}</svg>`;
-        }
-
-        // --- APP LOGIC ---
-
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-            }
-            return array;
-        }
-
-        function startApp() {
-            document.getElementById('landing').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('landing').style.display = 'none';
-                document.getElementById('deck').style.display = 'flex';
-                // Initialize deck
-                currentDeck = shuffle([...cards]);
-                loadCard(0);
-            }, 500);
-        }
-
-        function loadCard(index) {
-            const card = currentDeck[index];
-            const visual = generateIcon(card.visual);
-            
-            // Populate DOM
-            document.getElementById('dispId').innerText = `#${String(card.id).padStart(3, '0')}`;
-            document.getElementById('dispText').innerText = card.text;
-            document.getElementById('dispMeaning').innerText = card.meaning;
-            document.getElementById('visualTarget').innerHTML = visual;
-        }
-
-        function handleDeckInteraction() {
-            if (isAnimating) return;
-
-            const cardEl = document.getElementById('cardElement');
-            const navText = document.getElementById('instructionText');
-
-            if (!isFlipped) {
-                // FLIP ACTION
-                cardEl.classList.add('flipped');
-                isFlipped = true;
-                navText.innerText = "TAP FOR NEXT DIAGNOSIS";
-            } else {
-                // NEXT CARD ACTION
-                isAnimating = true;
-                cardEl.classList.add('slide-out');
-
-                setTimeout(() => {
-                    // Reset positions and load new data
-                    isFlipped = false;
-                    cardEl.classList.remove('flipped');
-                    cardEl.classList.remove('slide-out');
-                    
-                    // Increment and Loop
-                    currentIndex++;
-                    if (currentIndex >= currentDeck.length) {
-                        currentDeck = shuffle([...cards]);
-                        currentIndex = 0;
-                    }
-                    
-                    loadCard(currentIndex);
-                    navText.innerText = "TAP TO FLIP";
-                    isAnimating = false;
-                }, 400); // Wait for animation
-            }
-        }
-    </script>
-</body>
-</html>
+          {id:91, text:"The twist ending.", meaning:"Change the meaning of the chorus lyrics in the final repetition.", visual
